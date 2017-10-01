@@ -102,9 +102,8 @@ on  30/9/2017
         	if(msg.data.props.hasOwnProperty("id")){
         		delete msg.data.props["id"];
         	}
-        	if(msg.data.props.hasOwnProperty("userData")){
-        		//msg.data.props.userData = JSON.stringify(msg.data.props.userData);
-        	}
+
+    		msg.data.props = stringify(msg.data.props,["userData","originalTextures","textures"]);
         	Entities.editEntity(msg.data.id,msg.data.props);
         } else if(msg.type === "jsonDataRequest"){
         	sendData(msg.data);
@@ -134,10 +133,42 @@ on  30/9/2017
         sendData(clicked.entityID);
     }
 
+    function objectify(obj,tags){
+    	if(!(tags instanceof Array))tags = [tags];
+    	for(var i = 0;i < tags.length;i++){
+    		var tag = tags[i];
+    		if(obj.hasOwnProperty(tag)){
+    			if(typeof obj[tag] === "string"){
+    				try {
+    	        		obj[tag] = JSON.parse(obj[tag]);
+	        		} catch (err) {
+
+        			}
+        		}
+    		}
+    	}
+    	return obj;
+    }
+
+    function stringify(obj,tags){
+    	if(!(tags instanceof Array))tags = [tags];
+    	for(var i = 0;i < tags.length;i++){
+    		var tag = tags[i];
+    		if(obj.hasOwnProperty(tag)){
+    			if(typeof obj[tag] === "object"){
+    				obj[tag] = JSON.stringify(obj[tag]);
+    			}
+    		}
+    	}
+    	return obj;
+    }
+
     function sendData(id){
     	var data = Entities.getEntityProperties(id);
 
-    	data.userData = JSON.parse(data.userData);
+    	data = objectify(data,["userData","originalTextures","textures"]);
+    	//data.userData = JSON.parse(data.userData);
+
     	data.locked = data.locked == 1;
     	data.dynamic = data.dynamic == 1;
     	data.visible = data.visible == 1;

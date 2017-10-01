@@ -82,6 +82,9 @@ on  30/9/2017
                 if (Object.keys(dif).length > 0) {
                     webLink.send("jsonData", { id: jsonData.id, props: dif });
                     jsonData = nd;
+                    if(dif.hasOwnProperty("locked")){
+                        webLink.send("jsonDataRequest", jsonData.id);
+                    }
                 }
             }
         }
@@ -117,16 +120,22 @@ on  30/9/2017
         //console.log(JSON.stringify(n));
         var field = false;
         var value = true;
-
+        if(jsonData != null){
+            if(jsonData.locked == true)value = false;
+        }
         if(n.path.length == 1){
             switch(n.path[0]){
                 case "id":
                     value = false;
                     break;
+                case "locked":
+                    value = true;
+                    break;
             }
         } else {
             switch(n.path[0]){
                 case "userData":
+                case "texturest":
                     field = true;
                     break;
             }
