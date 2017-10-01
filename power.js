@@ -74,11 +74,14 @@ on  30/9/2017
         visible: false
     });
 
+    //print(JSON.stringify(Object.keys(editorUI)));
+
     function toggleWebState() {
     	setWebState(!isActive);
     }
 
     function setWebState(on){
+    	if(on === isActive)return;
     	isActive = on;
         editorUI.setVisible(isActive);
         button.editProperties({ isActive: isActive });
@@ -86,12 +89,16 @@ on  30/9/2017
 
     button.clicked.connect(toggleWebState);
 
+    editorUI.visibleChanged.connect(function(){
+    	setWebState(editorUI.isVisible());
+    });
+
     editorUI.webEventReceived.connect(function(msg) {
         msg = JSON.parse(msg);
         if(msg.type === "picker"){
         	isPicker = true;
         } else if(msg.type === "jsonData") {
-        	print(JSON.stringify(msg));
+        	//print(JSON.stringify(msg));
         	if(msg.data.props.hasOwnProperty("id")){
         		delete msg.data.props["id"];
         	}

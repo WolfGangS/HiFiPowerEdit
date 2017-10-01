@@ -73,7 +73,6 @@ on  30/9/2017
     function safeSendDiff(force){
         editor.validate();
         if (editor.errorNodes.length < 1) {
-            console.log("VALID");
             var nd = editor.get();
             if(force){
                 webLink.send("jsonData", { id: jsonData.id, props: nd });
@@ -111,7 +110,7 @@ on  30/9/2017
     }
 
     function onError(e) {
-        console.log(JSON.stringify(e));
+        //console.log(JSON.stringify(e));
     }
 
     function onEditable(n) {
