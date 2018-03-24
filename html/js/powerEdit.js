@@ -30,17 +30,20 @@ on  30/9/2017
         sortObjectKeys: true,
         onError: onError
     };
-    var webLink = null;
+    //var webLink = null;
     var container = document.getElementById("jsoneditor");
     var editor = new JSONEditor(container, options);
     var jsonData = null;
     var isSafe = false;
 
+    function webSend(type,data){
+        EventBridge.emitWebEvent(JSON.stringify({type:type,data:data}));
+    }
 
     function addButtons() {
         $(".jsoneditor-menu").prepend(
             $("<button>").on("click", function() {
-                webLink.send("picker", {});
+                webSend("picker", {});
             }).attr("title", "Select Entity")
         );
         $("<button>").on("click", function() {
@@ -48,7 +51,7 @@ on  30/9/2017
         }).text("Apply").attr("style", "width:auto;background-position:-96px -120px;padding:0px 5px 0px 5px;").insertBefore("table.jsoneditor-search");
 
         $("<button>").on("click", function() {
-            webLink.send("jsonDataRequest", jsonData.id);
+            webSend("jsonDataRequest", jsonData.id);
         }).text("Refresh").attr("style", "width:auto;background-position:-96px -120px;padding:0px 5px 0px 5px;").insertBefore("table.jsoneditor-search");
     }
 
@@ -77,15 +80,15 @@ on  30/9/2017
         if (editor.errorNodes.length < 1) {
             var nd = editor.get();
             if (force) {
-                webLink.send("jsonData", { id: jsonData.id, props: nd });
+                webSend("jsonData", { id: jsonData.id, props: nd });
                 jsonData = nd;
             } else {
                 var dif = onlyChanges(jsonData, nd);
                 if (Object.keys(dif).length > 0) {
-                    webLink.send("jsonData", { id: jsonData.id, props: dif });
+                    webSend("jsonData", { id: jsonData.id, props: dif });
                     jsonData = nd;
                     if (dif.hasOwnProperty("locked")) {
-                        webLink.send("jsonDataRequest", jsonData.id);
+                        webSend("jsonDataRequest", jsonData.id);
                     }
                 }
             }
